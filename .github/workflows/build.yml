@@ -1,0 +1,28 @@
+name: Build NDS ROM
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: blocksds/blocksds:latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Fix folder structure
+        run: |
+          mkdir -p source
+          mv main.c source/
+
+      - name: Compile Project
+        run: |
+          make -f Makefile include=/opt/blocksds/core/sys/default_makefiles/rom/Makefile
+
+      - name: Upload NDS Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dsi-patcher-rom
+          path: ./*.nds
